@@ -6,7 +6,6 @@ import { printColouringBook } from "./printColouringBook";
 export default function App() {
   const [settings, setSettings] = createSignal({"blur": 0, "light": 0, "dark": 0, "sharpen": 0});
   const [results, setResults] = createSignal([]);
-  // const [results, setResults] = createSignal([{"colour_in": co_img, "image": og_img, "blur": 0, "light": 0, "dark": 0, "sharpen": 0}]);
   const [imageUploaded, setImageUploaded] = createSignal(false);
   const [pageNo, setPageNo] = createSignal(1);
   const [toggleOnImage, setToggleOnImage] = createSignal(false);
@@ -15,13 +14,13 @@ export default function App() {
     let image = e.target.files[0];
     let reader = new FileReader();
     reader.readAsDataURL(image);
-    reader.onload = e => {
+    reader.onload = r => {
       setImageUploaded(true);
       setToggleOnImage(true);
       let updResults = [...results()];
       let result = {
         "colour_in": null,
-        "image": e.target.result,
+        "image": r.target.result,
         "blur": 0,
         "light": 0,
         "dark": 0,
@@ -51,10 +50,12 @@ export default function App() {
     let updResults = [...results()];
     updResults.splice(index, 1);
     console.log(updResults);
-    let pageNo = index+1
+    let pageNo = index+1;
     if (pageNo>updResults.length) {
       pageNo--;
-      console.log("here1");
+    }
+    if (pageNo==0) {
+      document.getElementById("imageInput").value = "";
     }
     console.log(pageNo)
     setResults(updResults);
@@ -67,46 +68,12 @@ export default function App() {
     updResults[index].width=e.target.naturalWidth;
     console.log(updResults);
     setResults(updResults);
-}
-
-  // const handlePrintColouringBook = () => {
-  //   var date = new Date();
-  //   var printWindow = window.open("about:blank", "My Colouring Book - "+date, "left=50000,top=50000,width=0,height=0")
-  //   var html = "<html><head></head><body style=\"-webkit-print-color-adjust:exact;\">";
-  //   results().map((result) => {
-  //     if (result.colour_in) {
-  //       let style = "display: inline-block; page-break-after: always;"
-  //       let maxWidth;
-  //       let maxHeight;
-  //       if (result.isLandscape) {
-  //         console.log("rotate image");
-  //         style += " transform: rotate(-90deg) translateX(-100%); transform-origin: top left;";
-  //         maxWidth = pageHeight-padding;
-  //         maxHeight = pageWidth-padding;
-  //       } else {
-  //         maxWidth = pageWidth-padding;
-  //         maxHeight = pageHeight-padding;
-  //       }
-  //       style += ` max-width: ${maxWidth}${units}; max-height: ${maxHeight}${units};`;
-  //       if (result.resizeHeight) {
-  //         console.log("resize height");
-  //         style += ` width: auto; height: ${maxHeight}${units};`;
-  //       }
-  //       if (result.resizeHeight) {
-  //         style += ` width: ${maxWidth}${units}; height: auto;`;
-  //       }
-  //       html += `<img style=\"${style}\" src=\"${result.colour_in}\"/>`
-  //     }
-  //   })
-  //   html += "</body></html>";
-  //   printWindow.document.write(html);
-  //   printWindow.print();
-  // }
+  }
 
   return (
     <div class="flex flex-col w-screen h-screen space-y-2">
       <div class="navbar bg-base-100 bg-gradient-to-r from-purple-500 to-pink-500">
-        <a class="btn btn-ghost text-xl">Colour In!</a>
+        <a class="btn btn-ghost text-xl" href="">ColourIn!</a>
       </div>
       <div class="flex flex-wrap justify-center flex-1 space-x-2 items-center">
         {(imageUploaded() && results().length>0 && (pageNo()>0 && pageNo()<=results().length))?(
@@ -121,18 +88,22 @@ export default function App() {
                         results()[pageNo()-1].image
                   } onLoad={(e) => setInforForPrinting(e, pageNo()-1)} alt="image"/>
               </figure>
-              <button class="btn btn-square btn-sm absolute" onClick={(e) => handleDeleteImage(pageNo()-1)}>x</button>
+              <button class="btn btn-square btn-sm absolute" onClick={() => handleDeleteImage(pageNo()-1)}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             <div class="join">
-              <button class="join-item btn" disabled={results().length<=1||pageNo()<=1} onClick={(e) => {setPageNo(pageNo()-1)}}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />
+              <button class="join-item btn" disabled={results().length<=1||pageNo()<=1} onClick={() => setPageNo(pageNo()-1)}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
               </button>
               <button class="join-item btn">Page {pageNo()}</button>
-              <button class="join-item btn" disabled={results().length<=1||pageNo()>=results().length} onClick={(e) =>{setPageNo(pageNo()+1)}}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+              <button class="join-item btn" disabled={results().length<=1||pageNo()>=results().length} onClick={() => setPageNo(pageNo()+1)}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
               </button>
             </div>
@@ -148,7 +119,7 @@ export default function App() {
                 <div class="label">
                   <span class="label-text">Open a new image:</span>
                 </div>
-                <input type="file" class="file-input file-input-bordered file-input-secondary w-full max-w-xs" id="image" onChange={(e) => {handleImageUpload(e)}}/>
+                <input type="file" accept=".jpg,.png,.webp" class="file-input file-input-bordered file-input-secondary w-full max-w-xs" id="imageInput" onChange={(e) => handleImageUpload(e)}/>
               </label>
               {(imageUploaded() && results().length>0 && (pageNo()>0 && pageNo()<=results().length))?(
               <div class="flex space-x-2">
@@ -159,11 +130,11 @@ export default function App() {
               </div>
               ):(<div/>)}
               <div class="card-actions justify-end">
-                <button class="btn btn-primary" disabled={!imageUploaded()} onClick={(e) => {
+                <button class="btn btn-primary" disabled={!imageUploaded() || !results().length>0} onClick={(e) => {
                   e.preventDefault();
                   getColourIn(results()[pageNo()-1].image, settings()).then((result) => {
-                    updateResults(result, pageNo()-1)
-                    setToggleOnImage(false)
+                    updateResults(result, pageNo()-1);
+                    setToggleOnImage(false);
                   })}}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
@@ -172,12 +143,12 @@ export default function App() {
                 </button>
                 {(imageUploaded() && results().length>0 && (pageNo()>0 && pageNo()<=results().length))?(
                   <label class="btn swap">
-                    <input type="checkbox" disabled={!results()[pageNo()-1].colour_in} checked={toggleOnImage()} onChange={() => {setToggleOnImage(!toggleOnImage())}}/>
+                    <input type="checkbox" disabled={!results()[pageNo()-1].colour_in} checked={toggleOnImage()} onChange={() => setToggleOnImage(!toggleOnImage())}/>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-off w-6 h-6">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="swap-on fill-current w-6 h-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" data-slot="icon" class="swap-on w-6 h-6">
+                      <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
                     </svg>
                   </label>
                 ):(<div/>)}
@@ -195,7 +166,7 @@ export default function App() {
       </div>
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
-          <p>Hello</p>
+          <p>ColourIn! 2023</p>
         </aside>
       </footer>
     </div>

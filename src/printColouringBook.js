@@ -2,7 +2,7 @@ const pageHeight = "29.7", pageWidth = "21", padding = "2", units = "cm";
 
 export function printColouringBook(pages) {
     var date = new Date();
-    var printWindow = window.open("about:blank", "My Colouring Book - "+date)
+    var printWindow = window.open("about:blank", `My Colouring Book - ${date}`);
     var html = "<html><head></head><body>";
     pages.map((result) => {
       if (result.colour_in) {
@@ -31,10 +31,11 @@ export function printColouringBook(pages) {
         } else {
             style += " width: auto; height: auto;";
         }
-        html += `<img style=\"${style}\" src=\"${result.colour_in}\"/>`
+        html += `<img style=\"${style}\" src=\"${result.colour_in}\"/>`;
       }
-    })
+    });
     html += "</body></html>";
     printWindow.document.write(html);
     printWindow.print();
   }
+  
