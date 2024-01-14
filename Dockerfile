@@ -22,7 +22,7 @@ COPY --from=build /app/lighttpd.conf /etc/lighttpd/
 
 COPY --from=build /app/dist /var/www/html/
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
 
