@@ -1,14 +1,16 @@
 FROM node:lts-alpine as build
 
-ARG backend_url
+ARG backend_host backend_port=8080
 
-ENV VITE_GET_COLOUR_IN_URL $backend_url
+RUN [[ "$backend_host" == "" ]] && echo "Missing or empty build arg: backend_host" && exit 1 || true
 
 WORKDIR /app
 
 COPY . .
 
-RUN npm ci && npm run build
+RUN npm ci && npm run build \
+&& sed -i "s/<BACKEND_HOST>/$backend_host/g" lighttpd.conf \
+&& sed -i "s/<BACKEND_PORT>/$backend_port/g" lighttpd.conf
 
 FROM alpine:latest
 

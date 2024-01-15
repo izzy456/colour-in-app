@@ -1,6 +1,6 @@
 export async function getColourIn(image, settings) {
     const response = await fetch(
-        import.meta.env.VITE_GET_COLOUR_IN_URL, {
+        "/get-colour-in", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
