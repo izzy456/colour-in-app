@@ -14,7 +14,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: /
+        working-directory: .
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -46,6 +46,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          INPUT_PROJECTBASEDIR: .
         with:
           args: >
             -Dsonar.projectKey=colour-in-frontend
@@ -55,8 +56,8 @@ jobs:
 
       - name: Tag image and upload to ECR
         id: tag_upload
-        run: \
-          docker tag colour-in-frontend:$GITHUB_SHA $ECR_REPO/colour-in-frontend:$GITHUB_SHA \
-          push $ECR_REPO/colour-in-frontend:$GITHUB_SHA
+        run: |
+          docker tag colour-in-frontend:$GITHUB_SHA $ECR_REPO/colour-in-frontend:$GITHUB_SHA
+          docker push $ECR_REPO/colour-in-frontend:$GITHUB_SHA
         env:
           ECR_REPO: ${{ secrets.ECR_REPO }}
