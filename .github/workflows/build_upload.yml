@@ -29,16 +29,11 @@ jobs:
 
       - name: Login to ECR
         id: login
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
-        env:
-          AWS_REGION: ${{ vars.AWS_REGION }}
-          ECR_REPO: ${{ secrets.ECR_REPO }}
+        run: aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
       - name: Build Docker image
         id: build
-        run: docker build -t colour-in-frontend:$GITHUB_SHA --build-arg backend_host=$BACKEND_URL .
-        env:
-          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: docker build -t colour-in-frontend:$GITHUB_SHA --build-arg backend_host=${{ secrets.BACKEND_URL }} .
 
       - name: SonarQube Scan
         id: scan
@@ -57,7 +52,5 @@ jobs:
       - name: Tag image and upload to ECR
         id: tag_upload
         run: |
-          docker tag colour-in-frontend:$GITHUB_SHA $ECR_REPO/colour-in-frontend:$GITHUB_SHA
-          docker push $ECR_REPO/colour-in-frontend:$GITHUB_SHA
-        env:
-          ECR_REPO: ${{ secrets.ECR_REPO }}
+          docker tag colour-in-frontend:$GITHUB_SHA ${{ secrets.ECR_REPO }}/colour-in-frontend:$GITHUB_SHA
+          docker push ${{ secrets.ECR_REPO }}/colour-in-frontend:$GITHUB_SHA
