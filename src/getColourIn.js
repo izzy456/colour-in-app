@@ -8,8 +8,8 @@ export async function getColourIn(image, settings) {
             body: JSON.stringify({
                 "image": image,
                 "blur_val": settings.blur,
-                "light_val": parseFloat(settings.light)/10,
-                "dark_val": parseFloat(settings.dark)/10,
+                "contrast_val": settings.contrast*10,
+                "brighten_val": settings.brighten*10,
                 "sharpen": settings.sharpen
             })
         }

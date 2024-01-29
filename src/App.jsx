@@ -4,7 +4,7 @@ import { getColourIn } from "./getColourIn";
 import { printColouringBook } from "./printColouringBook";
 
 export default function App() {
-  const [settings, setSettings] = createSignal({"blur": 0, "light": 0, "dark": 0, "sharpen": 0});
+  const [settings, setSettings] = createSignal({"blur": 0, "contrast": 0, "brighten": 0, "sharpen": 0});
   const [results, setResults] = createSignal([]);
   const [imageUploaded, setImageUploaded] = createSignal(false);
   const [pageNo, setPageNo] = createSignal(1);
@@ -22,9 +22,9 @@ export default function App() {
         "colour_in": null,
         "image": r.target.result,
         "blur": 0,
-        "light": 0,
-        "dark": 0,
-        "sharpen": 0
+        "contrast": 0,
+        "brighten": 0,
+        "sharpen": 0,
       };
       updResults.push(result);
       setResults(updResults);
@@ -124,8 +124,8 @@ export default function App() {
               {(imageUploaded() && results().length>0 && (pageNo()>0 && pageNo()<=results().length))?(
               <div class="flex space-x-2">
                   <Incrementor valueName="blur" min={0} max={10} value={settings().blur} handler={updateSettings}/>
-                  <Incrementor valueName="light" min={0} max={30} value={settings().light} handler={updateSettings}/>
-                  <Incrementor valueName="dark" min={0} max={10} value={settings().dark} handler={updateSettings}/>
+                  <Incrementor valueName="contrast" min={-12} max={12} value={settings().contrast} handler={updateSettings}/>
+                  <Incrementor valueName="brighten" min={-12} max={12} value={settings().brighten} handler={updateSettings}/>
                   <Incrementor valueName="sharpen" min={0} max={1} value={settings().sharpen} handler={updateSettings}/>
               </div>
               ):(<div/>)}
@@ -135,7 +135,8 @@ export default function App() {
                   getColourIn(results()[pageNo()-1].image, settings()).then((result) => {
                     updateResults(result, pageNo()-1);
                     setToggleOnImage(false);
-                  })}}>
+                  })
+                }}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                   </svg>
