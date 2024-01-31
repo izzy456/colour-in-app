@@ -24,7 +24,9 @@ export default function App() {
         "blur": 0,
         "contrast": 0,
         "brighten": 0,
-        "sharpen": 0
+        "sharpen": 0,
+        "height": r.target.result.naturalHeight,
+        "width": r.target.result.naturalWidth,
       };
       updResults.push(result);
       setResults(updResults);
@@ -132,7 +134,7 @@ export default function App() {
               <div class="card-actions justify-end">
                 <button class="btn btn-primary" disabled={!imageUploaded() || !results().length>0} onClick={(e) => {
                   e.preventDefault();
-                  getColourIn(results()[pageNo()-1].image, settings()).then((result) => {
+                  getColourIn(results()[pageNo()-1].image, settings(), results()[pageNo()-1].height, results()[pageNo()-1].width).then((result) => {
                     updateResults(result, pageNo()-1);
                     setToggleOnImage(false);
                   })
