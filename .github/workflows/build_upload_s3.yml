@@ -11,6 +11,13 @@ jobs:
   build_opencv:
     name: Build code and upload to S3
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
     steps:
       - name: Checkout
         uses: actions/checkout@v4
