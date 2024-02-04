@@ -18,9 +18,9 @@ cd opencv
 docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) emscripten/emsdk python3 ./platforms/js/build_js.py wasm_build \
 --build_wasm --disable_single_file --cmake_option="-DBUILD_LIST=js,core,imgproc" \
 --emscripten_dir=../emsdk/upstream/emscripten
-sed -i "s/var Module=moduleArg;var readyPromiseResolve/var Module=moduleArg;var cv=Module;var readyPromiseResolve/1" opencv/wasm_build/bin/opencv.js
+sed -i "s/var Module=moduleArg;var readyPromiseResolve/var Module=moduleArg;var cv=Module;var readyPromiseResolve/1" wasm_build/bin/opencv.js
 
 echo Uploading artifacts to S3
-aws s3 cp --recursive opencv/wasm_build/bin s3://opencv-build-artifacts/
+aws s3 cp --recursive wasm_build/bin s3://opencv-build-artifacts/
 
 echo Done
