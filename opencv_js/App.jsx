@@ -75,7 +75,7 @@ export default function App() {
   return (
     <div class="flex flex-col w-screen h-screen space-y-2">
       <div class="navbar bg-base-100 bg-gradient-to-r from-purple-500 to-pink-500">
-        <a class="btn btn-ghost text-xl" href="">ColourIn!</a>
+        <a class="btn btn-ghost text-xl text-white" href="">ColourIn!</a>
       </div>
       <div class="flex flex-wrap justify-center flex-1 space-x-2 items-center">
         {(imageUploaded() && results().length>0 && (pageNo()>0 && pageNo()<=results().length))?(
@@ -169,7 +169,7 @@ export default function App() {
       </div>
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
-          <p>ColourIn! 2023</p>
+          <p>ColourIn! 2024</p>
         </aside>
       </footer>
     </div>
