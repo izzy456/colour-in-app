@@ -18,6 +18,7 @@ jobs:
       branch: ${{ (contains(github.ref_name, 'feature') && 'feature') || github.ref_name }}
       project-name: colour-in-frontend
       aws-region: ${{ vars.AWS_REGION }}
+      doing-tests: false
     secrets:
       aws-role: ${{ secrets.AWS_ROLE }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
