@@ -169,7 +169,7 @@ export default function App() {
       </div>
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
-          <p>ColourIn! 2024</p>
+          <p><a class="underline" href="https://github.com/izzy456/colour-in-app">ColourIn! 2024</a></p>
         </aside>
       </footer>
     </div>
