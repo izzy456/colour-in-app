@@ -34,8 +34,8 @@ jobs:
 
       - name: Copy in replacement files
         run: |
-          \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
-          \cp opencv_js/index.html .
+          mv opencv_js/App.jsx opencv_js/getColourIn.js src/
+          mv opencv_js/index.html .
 
       - name: SonarQube Scan
         id: scan
@@ -89,7 +89,7 @@ jobs:
         run: |
           chmod +x opencv_js/build.sh
           ./opencv_js/build.sh
-          cp opencv/wasm_build/bin/opencv.js opencv/wasm_build/bin/opencv_js.wasm .
+          mv opencv/wasm_build/bin/opencv.js opencv/wasm_build/bin/opencv_js.wasm .
 
       - name: Download custom OpenCV.js from S3
         if: ${{ !inputs.build_opencv }}
@@ -99,8 +99,8 @@ jobs:
 
       - name: Copy in replacement files
         run: |
-          \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
-          \cp opencv_js/index.html .
+          mv opencv_js/App.jsx opencv_js/getColourIn.js src/
+          mv opencv_js/index.html .
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -110,7 +110,7 @@ jobs:
       - name: Build project
         run: |
           npm ci && npm run build
-          cp opencv.js opencv_js.wasm dist/assets/
+          mv opencv.js opencv_js.wasm dist/assets/
 
       - name: Upload to S3 - test
         if: ${{ github.ref_name == 'develop' }}
