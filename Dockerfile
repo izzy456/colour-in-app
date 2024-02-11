@@ -1,16 +1,14 @@
 FROM node:lts-alpine as build
 
-ARG backend_host
-
-RUN [[ "$backend_host" == "" ]] && echo "Missing or empty build arg: backend_host" && exit 1 || true
-
 WORKDIR /app
 
 COPY . .
 
-RUN npm ci && npm run build \
-&& sed -i "s/<BACKEND_HOST>/$backend_host/g" lighttpd-prod.conf \
-&& sed -i "s/<BACKEND_HOST>/$backend_host/g" lighttpd-test.conf
+RUN npm ci && npm run build
+
+RUN --mount=type=secret,id=build_secrets \
+  sed -i "s/<BACKEND_HOST>/$(cat /run/secrets/build_secrets)/g" lighttpd-prod.conf \
+  && sed -i "s/<BACKEND_HOST>/$(cat /run/secrets/build_secrets)/g" lighttpd-test.conf
 
 FROM alpine:latest
 

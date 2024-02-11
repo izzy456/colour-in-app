@@ -1,0 +1,43 @@
+name: Build test and deploy images - ECR & ECS
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - "feature/**"
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+jobs:
+  build-test-upload-ecr:
+    permissions:
+      id-token: write
+      contents: read
+    uses: izzy456/colour-in-workflows/.github/workflows/build-test-upload-ecr.yml@main
+    with:
+      branch: ${{ github.ref_name }}
+      project-name: colour-in-frontend
+      aws-region: ${{ vars.AWS_REGION }}
+      sonar-args: "-Dsonar.exclusions=opencv_js/**"
+    secrets:
+      aws-role: ${{ secrets.AWS_ROLE }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}
+      sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+      ecr-repo: ${{ secrets.ECR_REPO }}
+      build-secrets: ${{ secrets.BACKEND_URL }}
+  deploy-ecs:
+    if: ${{ !contains(github.ref_name, 'feature') }}
+    needs: build-test-upload-ecr
+    permissions:
+      id-token: write
+      contents: read
+    uses: izzy456/colour-in-workflows/.github/workflows/deploy-ecs.yml@main
+    with:
+      branch: ${{ github.ref_name }}
+      project-name: colour-in-frontend
+      aws-region: ${{ vars.AWS_REGION }}
+      cluster-name: colour-in
+      task-name: colour-in-frontend-${{ github.ref_name == 'main' && 'prod' || 'test' }}
+    secrets:
+      aws-role: ${{ secrets.AWS_ROLE }}
+      ecr-repo: ${{ secrets.ECR_REPO }}
