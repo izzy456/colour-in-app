@@ -1,5 +1,16 @@
 name: Build code and upload to S3
 on:
+  push:
+    branches:
+      - feature/**
+      - develop
+      - main
+    paths-ignore:
+      - '**.md'
+      - ".github/workflows/ecr-ecs-full-workflow.yml"
+      - "src/App.jsx"
+      - "src/getColourIn.js"
+      - "index.html"
   workflow_dispatch:
     inputs:
       build_opencv:
@@ -7,20 +18,51 @@ on:
         type: boolean
         required: false
         default: false
+defaults:
+  run:
+    shell: bash
+    working-directory: .
 jobs:
-  build_opencv:
-    name: Build code and upload to S3
+  sonar-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Copy in replacement files
+        run: |
+          \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
+          \cp opencv_js/index.html .
+
+      - name: SonarQube Scan
+        id: scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_APP }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=colour-in-app
+            -Dsonar.sources=.
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=120
+  
+  build:
+    if: ${{ always() && contains(fromJson('["success", "skipped"]'), needs.sonar-scan.result) }}
+    needs: sonar-scan
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Checkout OpenCV
         if: ${{ inputs.build_opencv }}
@@ -70,5 +112,10 @@ jobs:
           npm ci && npm run build
           cp opencv.js opencv_js.wasm dist/assets/
 
-      - name: Upload to S3
+      - name: Upload to S3 - test
+        if: ${{ github.ref_name == 'develop' }}
+        run: aws s3 cp --recursive dist s3://colour-in-test
+
+      - name: Upload to S3 - prod
+        if: ${{ github.ref_name == 'main' }}
         run: aws s3 cp --recursive dist s3://colour-in

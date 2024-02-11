@@ -7,8 +7,11 @@ Single page app that creates colouring pages using OpenCVs image processing func
 - daisyUI: https://github.com/saadeghi/daisyui
 - tailwindcss: https://github.com/tailwindlabs/tailwindcss
 
-## Backend (no longer used)
-https://github.com/izzy456/colour-in-backend
-
 ## Infrastructure
 https://github.com/izzy456/colour-in-iac
+
+## Reusable Workflows
+https://github.com/izzy456/colour-in-workflows
+
+## Backend (no longer used)
+https://github.com/izzy456/colour-in-backend
