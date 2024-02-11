@@ -1,0 +1,109 @@
+name: Build code and upload to S3
+on:
+  push:
+    branches:
+      - feature/**
+      - develop
+      - main
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      build_opencv:
+        description: "Rebuild custom OpenCV.js"
+        type: boolean
+        required: false
+        default: false
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+jobs:
+  sonar-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy in replacement files
+        run: |
+          \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
+          \cp opencv_js/index.html .
+
+      - name: SonarQube Scan
+        id: scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          INPUT_PROJECTBASEDIR: .
+        with:
+          args: >
+            -Dsonar.projectKey=colour-in-app
+            -Dsonar.sources=.
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=120
+  
+  build:
+    if: ${{ always() && contains(fromJson('["success", "skipped"]'), needs.sonar-scan.result) }}
+    needs: sonar-scan
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout OpenCV
+        if: ${{ inputs.build_opencv }}
+        uses: actions/checkout@v4
+        with:
+          repository: opencv/opencv
+          path: opencv
+
+      - name: Checkout EMSDK
+        if: ${{ inputs.build_opencv }}
+        uses: actions/checkout@v4
+        with:
+          repository: emscripten-core/emsdk
+          path: emsdk
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Build custom OpenCV.js
+        if: ${{ inputs.build_opencv }}
+        run: |
+          chmod +x opencv_js/build.sh
+          ./opencv_js/build.sh
+          cp opencv/wasm_build/bin/opencv.js opencv/wasm_build/bin/opencv_js.wasm .
+
+      - name: Download custom OpenCV.js from S3
+        if: ${{ !inputs.build_opencv }}
+        run: |
+          aws s3 cp s3://opencv-build-artifacts/opencv.js .
+          aws s3 cp s3://opencv-build-artifacts/opencv_js.wasm .
+
+      - name: Copy in replacement files
+        run: |
+          \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
+          \cp opencv_js/index.html .
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build project
+        run: |
+          npm ci && npm run build
+          cp opencv.js opencv_js.wasm dist/assets/
+
+      - name: Upload to S3 - test
+        if: ${{ github.ref_name == 'develop' }}
+        run: aws s3 cp --recursive dist s3://colour-in-test
+
+      - name: Upload to S3 - prod
+        if: ${{ github.ref_name == 'main' }}
+        run: aws s3 cp --recursive dist s3://colour-in
