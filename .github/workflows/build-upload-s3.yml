@@ -22,6 +22,12 @@ jobs:
   sonar-scan:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
       - name: Copy in replacement files
         run: |
           \cp opencv_js/App.jsx opencv_js/getColourIn.js src/
@@ -33,8 +39,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          INPUT_PROJECTBASEDIR: .
         with:
+          projectBaseDir: .
           args: >
             -Dsonar.projectKey=colour-in-app
             -Dsonar.sources=.
@@ -51,6 +57,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Checkout OpenCV
         if: ${{ inputs.build_opencv }}
