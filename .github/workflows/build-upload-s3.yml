@@ -51,7 +51,7 @@ jobs:
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=120
   
-  build:
+  build-upload:
     if: ${{ always() && contains(fromJson('["success", "skipped"]'), needs.sonar-scan.result) }}
     needs: sonar-scan
     runs-on: ubuntu-latest
