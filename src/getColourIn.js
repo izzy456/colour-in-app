@@ -1,6 +1,6 @@
 export async function getColourIn(image, settings) {
     const response = await fetch(
-        "/get-colour-in", {
+        "<BACKEND_PATH>/get-colour-in", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -17,12 +17,6 @@
                     "containerPort": 8080
                 }
             ],
-            "environment": [
-                {
-                  "name": "ENVIRONMENT",
-                  "value": "<environment>"
-                }
-            ],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
