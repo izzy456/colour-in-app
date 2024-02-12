@@ -40,7 +40,6 @@ jobs:
       project-name: colour-in-frontend
       aws-region: ${{ vars.AWS_REGION }}
       cluster-name: colour-in
-      task-name: colour-in-frontend-${{ github.ref_name == 'main' && 'prod' || 'test' }}
     secrets:
       aws-role: ${{ secrets.AWS_ROLE }}
       ecr-repo: ${{ secrets.ECR_REPO }}
