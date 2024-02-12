@@ -21,6 +21,7 @@ jobs:
       project-name: colour-in-frontend
       aws-region: ${{ vars.AWS_REGION }}
       sonar-args: "-Dsonar.exclusions=opencv_js/**"
+      build-args: environment=${{ github.ref_name == 'main' && 'prod' || 'test' }}
     secrets:
       aws-role: ${{ secrets.AWS_ROLE }}
       sonar-token: ${{ secrets.SONAR_TOKEN }}
