@@ -13,7 +13,10 @@ RUN --mount=type=secret,id=build_secrets \
   || (sed "s|<BACKEND_HOST>|$(cat /run/secrets/build_secrets)|g" lighttpd-test.conf > lighttpd.conf \
   && sed -i "s|<BACKEND_PATH>|/experimental|g" src/getColourIn.js)
 
-RUN npm ci && npm run build
+RUN npm ci && npm run build && \
+  [[ "$environment" != "prod" ]] \
+  && sed -i "s|/assets/|/experimental/assets/|g" dist/index.html \
+  || true
 
 FROM alpine:latest
 
