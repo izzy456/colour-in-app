@@ -3,9 +3,9 @@ import { ColourIn } from "./types";
 const pageHeight = 29.7, pageWidth = 21, padding = 2, units = "cm";
 
 export function printColouringBook(pages: ColourIn[]) {
-  var date = new Date();
-  var printWindow = window.open("about:blank", `My Colouring Book - ${date}`);
-  var html = "<html><head></head><body>";
+  let date = new Date();
+  let printWindow = window.open("about:blank", `My Colouring Book - ${date}`)!;
+  let html = "<html><head></head><body>";
   pages.forEach((result) => {
     if (result.colour_in) {
       let isLandscape = result.width > result.height;
@@ -25,18 +25,18 @@ export function printColouringBook(pages: ColourIn[]) {
         height = result.height;
       }
       style += ` max-width: ${maxWidth}${units}; max-height: ${maxHeight}${units};`;
-      if (result.height / result.width > maxHeight / maxWidth) {
+      if (height / width > maxHeight / maxWidth) {
         console.log("resize height");
         style += ` width: auto; height: ${maxHeight}${units};`;
-      } else if (result.width / result.height > maxWidth / maxHeight) {
+      } else if (width / height > maxWidth / maxHeight) {
         style += ` width: ${maxWidth}${units}; height: auto;`;
       } else {
         style += " width: auto; height: auto;";
       }
-      html += `<img style=\"${style}\" src=\"${result.colour_in}\"/>`;
+      html += `<img style="${style}" src="${result.colour_in}"/>`;
     }
   });
   html += "</body></html>";
-  printWindow!.document.write(html);
-  printWindow!.print();
+  printWindow.document.write(html);
+  printWindow.print();
 }

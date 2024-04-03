@@ -72,7 +72,6 @@ export async function getColourIn(input: ColourIn, index: number, setColourIn: F
     const canvas = document.createElement("canvas");
     canvas.width = input.width;
     canvas.height = input.height;
-    const ctx = canvas.getContext("2d");
     cv.imshow(canvas, img);
     img.delete();
 
