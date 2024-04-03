@@ -1,14 +1,14 @@
 name: Build test and deploy images - ECR & ECS
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - "feature/**"
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/build-upload-s3.yml"
-      - "opencv_js/**"
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
+  #     - "feature/**"
+  #   paths-ignore:
+  #     - "**.md"
+  #     - ".github/workflows/build-upload-s3.yml"
+  #     - "opencv_js/**"
   workflow_dispatch:
 jobs:
   build-test-upload-ecr:
