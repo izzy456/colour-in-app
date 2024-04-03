@@ -8,8 +8,7 @@ on:
     paths-ignore:
       - '**.md'
       - ".github/workflows/ecr-ecs-full-workflow.yml"
-      - "src/App.jsx"
-      - "src/getColourIn.js"
+      - "src/getColourIn.tsx"
       - "index.html"
   workflow_dispatch:
     inputs:
@@ -35,7 +34,7 @@ jobs:
 
       - name: Copy in replacement files
         run: |
-          mv opencv_js/App.jsx opencv_js/getColourIn.js src/
+          mv opencv_js/getColourIn.tsx src/
           mv opencv_js/index.html .
 
       - name: SonarQube Scan
@@ -100,7 +99,7 @@ jobs:
 
       - name: Copy in replacement files
         run: |
-          mv opencv_js/App.jsx opencv_js/getColourIn.js src/
+          mv opencv_js/getColourIn.tsx src/
           mv opencv_js/index.html .
       
       - name: Setup Node.js
