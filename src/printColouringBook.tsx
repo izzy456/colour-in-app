@@ -6,7 +6,7 @@ export function printColouringBook(pages: ColourIn[]) {
   var date = new Date();
   var printWindow = window.open("about:blank", `My Colouring Book - ${date}`);
   var html = "<html><head></head><body>";
-  pages.map((result) => {
+  pages.forEach((result) => {
     if (result.colour_in) {
       let isLandscape = result.width > result.height;
       let style = "page-break-after: always; page-break-inside: avoid;"
