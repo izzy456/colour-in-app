@@ -3,6 +3,8 @@ import { getColourIn } from "./getColourIn";
 import { printColouringBook } from "./printColouringBook";
 import { ColourIn, Setting } from "./types";
 import { DEFAULT_SETTINGS, SETTINGS_LIMITS } from "./values";
+import colour_in_sample from "./assets/colour_in_sample.png"
+import image_sample from "./assets/image_sample.png"
 
 export default function App() {
   let results: ColourIn[] = [];
@@ -85,8 +87,8 @@ export default function App() {
                 <img src={(toggleColourIn() && colourIn()) ? colourIn() : image()} alt="image" onLoad={(e) => setInforForPrinting(e, pageNo() - 1)} />
               ) : (
                 <div>
-                  <img src="placeholder/image_sample.png" alt="image_sample" />
-                  <img class="absolute top-0 left-0 opacity-0 hover:opacity-100" src="placeholder/colour_in_sample.png" alt="colour_in_sample" />
+                  <img src={image_sample} alt="image_sample" />
+                  <img class="absolute top-0 left-0 opacity-0 hover:opacity-100" src={colour_in_sample} alt="colour_in_sample" />
                 </div>
               )}
             </figure>
